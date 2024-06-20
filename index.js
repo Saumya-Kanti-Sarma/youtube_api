@@ -12,12 +12,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
 const PORT = process.env.PORT || 9000;
 const app = express();
 
-app.get("/", (req, res) => {
-  const data = {
-    msg: "Welcome to my youtube search Api",
-  }
-  res.send(data);
-})
+
 
 app.get("/:id", async (req, res) => {
 
