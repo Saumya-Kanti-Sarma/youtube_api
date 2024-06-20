@@ -1,5 +1,4 @@
 const express = require("express");
-const { executablePath } = require("puppeteer");
 
 let chrome = {};
 let puppeteer;
@@ -20,7 +19,7 @@ app.get("/", (req, res) => {
   res.send(data);
 })
 
-app.get("/api/:id", async (req, res) => {
+app.get("/:id", async (req, res) => {
 
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     options = {
