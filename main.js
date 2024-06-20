@@ -24,12 +24,11 @@ app.get("/api/:id", async (req, res) => {
   const BASE_URL = `https://www.youtube.com/results?search_query=${id}`;
 
   const browser = await puppeteer.launch({
-    headless: true,
-    timeout: false,
     executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
+      "--single-process",
       "--no-zygote",
     ],
   });
