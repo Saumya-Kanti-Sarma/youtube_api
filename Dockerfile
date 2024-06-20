@@ -5,5 +5,5 @@ WORKDIR /user/src/app
 
 COPY package*.json ./
 RUN npm ci
-COPY ..
+COPY . .
 CMD [ "node","main.js"]
