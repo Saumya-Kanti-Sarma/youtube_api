@@ -1,7 +1,9 @@
 const puppeteer = require("puppeteer");
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
+app.use(cors())
 const PORT = process.env.PORT || 9000;
 require("dotenv").config();
 
@@ -16,7 +18,7 @@ app.get("/", (req, res) => {
     },
     status: 200,
   }
-  res.send(data);
+  res.json(data);
 })
 
 app.get("/api/:id", async (req, res) => {
@@ -43,7 +45,7 @@ app.get("/api/:id", async (req, res) => {
       const data = await page.evaluate(() => {
         const Data = [];
         const video_container = document.querySelectorAll("#dismissible");
-        for (let i = 0; i < video_container.length && Data.length < 15; i++) {
+        for (let i = 0; i < video_container.length && Data.length < 20; i++) {
           const index = video_container[i];
           const title = index.querySelector('yt-formatted-string').innerText;
           const views = index.querySelector('span').innerText;
@@ -54,10 +56,10 @@ app.get("/api/:id", async (req, res) => {
           if (vidLink && title) {
             Data.push({
               title: title,
-              views: views,
-              channel: channelName,
+              views: views || "",
+              channel: channelName || "",
               link: vidLink,
-              thumbnail: thumbnail,
+              thumbnail: thumbnail || "",
             });
           }
         };
