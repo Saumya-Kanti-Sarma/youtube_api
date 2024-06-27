@@ -26,6 +26,7 @@ app.get("/api/:id", async (req, res) => {
   const BASE_URL = `https://www.youtube.com/results?search_query=${id}`;
 
   const browser = await puppeteer.launch({
+    timeout: 120000,
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
