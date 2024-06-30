@@ -21,24 +21,26 @@ app.get("/", (req, res) => {
   res.json(data);
 })
 
+const browser = puppeteer.launch({
+  timeout: 120000,
+  protocolTimeout: 1200000,
+  args: [
+    "--disable-setuid-sandbox",
+    "--no-sandbox",
+    "--single-process",
+    "--no-zygote",
+  ],
+  executablePath:
+    process.env.NODE_ENV === "production"
+      ? process.env.PUPPETEER_EXECUTABLE_PATH
+      : puppeteer.executablePath(),
+});
+const page = browser.newPage();
+
 app.get("/api/:id", async (req, res) => {
   const { id } = req.params;
   const BASE_URL = `https://www.youtube.com/results?search_query=${id}`;
 
-  const browser = await puppeteer.launch({
-    timeout: 120000,
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
-  const page = await browser.newPage();
   await page.goto(BASE_URL).then(async () => {
     try {
       //console.log(`Welcome to the page`);
@@ -54,7 +56,7 @@ app.get("/api/:id", async (req, res) => {
           const vidLink = index.querySelector('a').href;
           const thumbnail = index.querySelector("img")?.src;
 
-          if (vidLink && title) {
+          if (vidLink && title && thumbnail) {
             Data.push({
               title: title,
               views: views || "",
