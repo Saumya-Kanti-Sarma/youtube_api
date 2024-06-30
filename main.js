@@ -1,12 +1,10 @@
 const puppeteer = require("puppeteer");
 const express = require("express");
 const cors = require("cors");
-
 const app = express();
 app.use(cors())
 const PORT = process.env.PORT || 9000;
 require("dotenv").config();
-
 app.get("/", (req, res) => {
   const data = {
     msg: "Welcome to my youtube search Api",
@@ -21,25 +19,25 @@ app.get("/", (req, res) => {
   res.json(data);
 })
 
-const browser = puppeteer.launch({
-  timeout: 120000,
-  protocolTimeout: 1200000,
-  args: [
-    "--disable-setuid-sandbox",
-    "--no-sandbox",
-    "--single-process",
-    "--no-zygote",
-  ],
-  executablePath:
-    process.env.NODE_ENV === "production"
-      ? process.env.PUPPETEER_EXECUTABLE_PATH
-      : puppeteer.executablePath(),
-});
-const page = browser.newPage();
-
 app.get("/api/:id", async (req, res) => {
   const { id } = req.params;
   const BASE_URL = `https://www.youtube.com/results?search_query=${id}`;
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
+  const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(120000)
 
   await page.goto(BASE_URL).then(async () => {
     try {
@@ -48,7 +46,7 @@ app.get("/api/:id", async (req, res) => {
       const data = await page.evaluate(() => {
         const Data = [];
         const video_container = document.querySelectorAll("#dismissible");
-        for (let i = 0; i < video_container.length && Data.length < 20; i++) {
+        for (let i = 0; i < video_container.length && Data.length < 10; i++) {
           const index = video_container[i];
           const title = index.querySelector('yt-formatted-string').innerText;
           const views = index.querySelector('span').innerText;
